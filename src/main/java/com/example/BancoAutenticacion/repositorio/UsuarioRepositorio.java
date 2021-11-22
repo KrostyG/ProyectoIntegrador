@@ -1,5 +1,6 @@
 package com.example.BancoAutenticacion.repositorio;
 
+import com.example.BancoAutenticacion.Entidad.Hash;
 import com.example.BancoAutenticacion.Entidad.Usuario;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -15,6 +16,7 @@ public class UsuarioRepositorio {
 
     public boolean agregarUsuario(Usuario usuario){
         try{
+            usuario.setContrasena(Hash.md5(usuario.getContrasena()));
             usurioRepositorioDAO.save(usuario);
             return true;
         }catch (Exception e){
