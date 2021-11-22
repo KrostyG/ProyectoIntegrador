@@ -14,8 +14,19 @@ public class Usuario {
     private String numeroTelefono;
     private int edad;
     private String contrasena;
+    private boolean bloqueado = false;
 
     public Usuario() {
+    }
+
+    public Usuario(Integer id, String nombre, String email, String numeroTelefono, int edad, String contrasena, boolean bloqueado) {
+        this.id = id;
+        this.nombre = nombre;
+        this.email = email;
+        this.numeroTelefono = numeroTelefono;
+        this.edad = edad;
+        this.contrasena = contrasena;
+        this.bloqueado = bloqueado;
     }
 
     public Usuario(Integer id, String nombre, String email, String numeroTelefono, int edad, String contrasena) {
