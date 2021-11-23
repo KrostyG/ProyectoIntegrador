@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 
 @Repository
 public class UsuarioRepositorio {
+    private  int bloquear = 0;
     @Autowired
     UsurioRepositorioDAO usurioRepositorioDAO;
 
@@ -73,5 +74,23 @@ public class UsuarioRepositorio {
             System.out.println("El la contraseba ingresada es inválida.");
             return false;
         }
+    }
+
+    public Optional<Usuario> encontrarPorEmail(String email) {
+       return usurioRepositorioDAO.encontrarUsuarioPorEmail(email);
+    }
+
+
+    public boolean login(Optional<Usuario> usuarioOptional, String mailBody, String contrasenaBody) {
+        String mail = usuarioOptional.get().getEmail();
+        String contrasena = usuarioOptional.get().getContrasena();
+        if(mail.equals(mailBody) && contrasena.equals(contrasenaBody)){
+            return true;
+        }
+        return false;
+    }
+
+    public void actualizarBloqueado(Usuario usuarioOptional) {
+        usurioRepositorioDAO.save(usuarioOptional);
     }
 }

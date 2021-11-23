@@ -7,9 +7,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/usuarios")
 public class UsuarioControlador {
+    private int bloquear = 0;
     @Autowired
     UsuarioServicio usuarioServicio;
 
@@ -28,5 +31,29 @@ public class UsuarioControlador {
             }
         }
         return new ResponseEntity<>("No se pudo registrar", HttpStatus.BAD_REQUEST);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<Usuario> login(@RequestBody Usuario usuario) throws noExisteUsuarioExcepcion, LogeoCorrectoUsuario, UsuarioBloqueado, ContrasenaEquivocada{
+        Optional<Usuario> usuarioOptional  = usuarioServicio.buscarPorEmail(usuario);
+        if(usuarioOptional.isEmpty()){
+            throw new noExisteUsuarioExcepcion();
+        }
+        if(usuarioOptional.get().isBloqueado()){
+            throw new UsuarioBloqueado();
+        }
+        String mailBody = usuario.getEmail();
+        String contrasenaBody = usuario.getContrasena();
+        if(usuarioServicio.login(usuarioOptional,mailBody, contrasenaBody) && bloquear < 3){
+            throw new LogeoCorrectoUsuario();
+        }
+        bloquear = bloquear + 1;
+        if (bloquear == 4){
+           usuarioOptional.get().setBloqueado(true);
+           Usuario usuario1 = usuarioOptional.get();
+           usuarioServicio.actualizarBloqueado(usuario1);
+           throw new UsuarioBloqueado();
+        }
+        throw new ContrasenaEquivocada();
     }
 }

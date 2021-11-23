@@ -5,6 +5,8 @@ import com.example.BancoAutenticacion.repositorio.UsuarioRepositorio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class UsuarioServicio {
     @Autowired
@@ -32,5 +34,22 @@ public class UsuarioServicio {
 
     public boolean validarContraseña(String contrasena){
         return usuarioRepositorio.validarContraseña(contrasena);
+    }
+
+    public Optional<Usuario> buscarPorEmail(Usuario usuario) {
+       String email=  usuario.getEmail();
+        return usuarioRepositorio.encontrarPorEmail(email);
+    }
+
+    public boolean login(Optional<Usuario> usuarioOptional, String mailBody, String contrasenaBody) {
+        if (usuarioRepositorio.login(usuarioOptional ,mailBody,contrasenaBody)){
+            return true;
+        }
+       return false;
+
+    }
+
+    public void actualizarBloqueado(Usuario usuarioOptional) {
+        usuarioRepositorio.actualizarBloqueado(usuarioOptional);
     }
 }
