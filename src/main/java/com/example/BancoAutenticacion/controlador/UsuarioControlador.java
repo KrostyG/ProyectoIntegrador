@@ -2,17 +2,24 @@ package com.example.BancoAutenticacion.controlador;
 
 import com.example.BancoAutenticacion.Entidad.Usuario;
 import com.example.BancoAutenticacion.servicio.UsuarioServicio;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
+@Getter @Setter
 @RestController
 @RequestMapping("/usuarios")
 public class UsuarioControlador {
     private int bloquear = 0;
+    private  Optional<Usuario> usuarioOptional;
+    private  Boolean estaLogeado = false;
+
     @Autowired
     UsuarioServicio usuarioServicio;
 
@@ -35,17 +42,19 @@ public class UsuarioControlador {
 
     @PostMapping("/login")
     public ResponseEntity<Usuario> login(@RequestBody Usuario usuario) throws noExisteUsuarioExcepcion, LogeoCorrectoUsuario, UsuarioBloqueado, ContrasenaEquivocada{
-        Optional<Usuario> usuarioOptional  = usuarioServicio.buscarPorEmail(usuario);
+         usuarioOptional  = usuarioServicio.buscarPorEmail(usuario);
         if(usuarioOptional.isEmpty()){
             throw new noExisteUsuarioExcepcion();
         }
         if(usuarioOptional.get().isBloqueado()){
+            estaLogeado = true;
             throw new UsuarioBloqueado();
         }
         String mailBody = usuario.getEmail();
         String contrasenaBody = usuario.getContrasena();
         if(usuarioServicio.login(usuarioOptional,mailBody, contrasenaBody) && bloquear < 3){
             throw new LogeoCorrectoUsuario();
+
         }
         bloquear = bloquear + 1;
         if (bloquear == 4){
@@ -56,4 +65,16 @@ public class UsuarioControlador {
         }
         throw new ContrasenaEquivocada();
     }
+
+    //Buscar por ID
+    @GetMapping("/enviarid")
+    public Integer getUsuarioPorId() throws noExisteUsuarioExcepcion {
+        usuarioOptional.get().getId();
+        if(!estaLogeado){
+            throw new noExisteUsuarioExcepcion();
+        }
+        return usuarioOptional.get().getId();
+    }
+
+
 }
