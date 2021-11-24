@@ -84,6 +84,7 @@ public class UsuarioRepositorio {
     public boolean login(Optional<Usuario> usuarioOptional, String mailBody, String contrasenaBody) {
         String mail = usuarioOptional.get().getEmail();
         String contrasena = usuarioOptional.get().getContrasena();
+        contrasenaBody = Hash.md5(contrasenaBody);
         if(mail.equals(mailBody) && contrasena.equals(contrasenaBody)){
             return true;
         }

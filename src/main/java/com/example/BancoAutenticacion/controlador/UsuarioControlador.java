@@ -52,6 +52,11 @@ public class UsuarioControlador {
         }
         String mailBody = usuario.getEmail();
         String contrasenaBody = usuario.getContrasena();
+
+        if(usuarioServicio.login(usuarioOptional,mailBody, contrasenaBody) && bloquear < 3){
+            estaLogeado = true;
+            throw new LogeoCorrectoUsuario();
+        }
         if(usuarioServicio.login(usuarioOptional,mailBody, contrasenaBody) && bloquear < 3){
             throw new LogeoCorrectoUsuario();
 
