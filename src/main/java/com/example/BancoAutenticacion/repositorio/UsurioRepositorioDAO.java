@@ -13,4 +13,6 @@ public interface UsurioRepositorioDAO extends CrudRepository<Usuario, Integer> {
 
     @Query(value = "select u from Usuario u where u.numeroTelefono = :numeroTelefono")
     Optional<Usuario> encontrarUsuarioPorNumeroTelefono(String numeroTelefono);
+
+
 }

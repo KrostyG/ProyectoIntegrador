@@ -1,5 +1,6 @@
 package com.example.BancoAutenticacion.controlador;
 
+import com.example.BancoAutenticacion.Entidad.Hash;
 import com.example.BancoAutenticacion.Entidad.Usuario;
 import com.example.BancoAutenticacion.configuracion.ResourceNotFoundException;
 import com.example.BancoAutenticacion.repositorio.UsurioRepositorioDAO;
@@ -84,6 +85,47 @@ public class UsuarioControlador {
         final Usuario usuarioActualizado = usurioRepositorioDAO.save(usuario1);
         return ResponseEntity.ok(usuarioActualizado);
     }
+
+    @PutMapping("/recuperacionDeContrasena/{id}")
+    public ResponseEntity<Usuario>recuperacionDeCoontrasena(@PathVariable(value = "id") Integer id,@Validated @RequestBody Usuario detalleUsuario)throws ResourceNotFoundException{
+        Usuario usuariopass = usurioRepositorioDAO.findById(id)
+                .orElseThrow(()->new ResourceNotFoundException("Usuario no encontrado :: "+ id));
+        if (usuarioServicio.validarContraseña(detalleUsuario.getContrasena())){
+        usuariopass.setContrasena(Hash.md5(detalleUsuario.getContrasena()));
+            final Usuario usuarioActualizado = usurioRepositorioDAO.save(usuariopass);
+            return new ResponseEntity<Usuario>(usuariopass, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+    }
+
+    @PutMapping("/cambioDeCelular/{id}")
+    public ResponseEntity<Usuario>cambioDeCelular(@PathVariable ("id")Integer id, @Validated @RequestBody Usuario detalleUsuario)throws ResourceNotFoundException{
+        Usuario usuariocel = usurioRepositorioDAO.findById(id)
+                .orElseThrow(()->new ResourceNotFoundException("Usuario no encontrado :: "+ id));
+            usuariocel.setNumeroTelefono(detalleUsuario.getNumeroTelefono());
+            final Usuario usuarioActualizado = usurioRepositorioDAO.save(usuariocel);
+            return new ResponseEntity<Usuario>(usuariocel, HttpStatus.OK);
+
+    }
+    @PutMapping("/cambioDeEmail/{id}")
+    public ResponseEntity<Usuario>cambioDeEmail(@PathVariable ("id")Integer id, @Validated @RequestBody Usuario detalleUsuario)throws ResourceNotFoundException{
+        Usuario usuariomail = usurioRepositorioDAO.findById(id)
+                .orElseThrow(()->new ResourceNotFoundException("Usuario no encontrado :: "+ id));
+        if (usuarioServicio.ValidarEmail(detalleUsuario.getEmail())){
+        usuariomail.setEmail(detalleUsuario.getEmail());
+        final Usuario usuarioActualizado = usurioRepositorioDAO.save(usuariomail);
+        return new ResponseEntity<Usuario>(usuariomail, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+
+
+
+
+
+
 
     //Buscar por ID
     @GetMapping("/enviarid")
