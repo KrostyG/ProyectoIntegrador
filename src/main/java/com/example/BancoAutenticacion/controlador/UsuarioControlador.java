@@ -1,12 +1,15 @@
 package com.example.BancoAutenticacion.controlador;
 
 import com.example.BancoAutenticacion.Entidad.Usuario;
+import com.example.BancoAutenticacion.configuracion.ResourceNotFoundException;
+import com.example.BancoAutenticacion.repositorio.UsurioRepositorioDAO;
 import com.example.BancoAutenticacion.servicio.UsuarioServicio;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +25,8 @@ public class UsuarioControlador {
 
     @Autowired
     UsuarioServicio usuarioServicio;
+    @Autowired
+    UsurioRepositorioDAO usurioRepositorioDAO;
 
     @PostMapping("/registro")
     public ResponseEntity<String> agregarCliente(@RequestBody Usuario usuario) {
@@ -69,6 +74,15 @@ public class UsuarioControlador {
            throw new UsuarioBloqueado();
         }
         throw new ContrasenaEquivocada();
+    }
+
+    @PutMapping("/desbloquearUsuario/{numeroTelefono}")
+    public ResponseEntity<Usuario>desbloquearUsuario(@PathVariable(value = "numeroTelefono")String numeroTelefono) throws ResourceNotFoundException {
+        Usuario usuario1 = usurioRepositorioDAO.encontrarUsuarioPorNumeroTelefono(numeroTelefono)
+                .orElseThrow(()->new ResourceNotFoundException("Usuario no encontrado con este telefono "+numeroTelefono));
+        usuario1.setBloqueado(false);
+        final Usuario usuarioActualizado = usurioRepositorioDAO.save(usuario1);
+        return ResponseEntity.ok(usuarioActualizado);
     }
 
     //Buscar por ID
