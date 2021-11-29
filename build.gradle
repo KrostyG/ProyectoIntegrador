@@ -31,5 +31,7 @@ dependencies {
 test {
 	useJUnitPlatform()
 }
-task stage(dependsOn: ['build', 'clean'])
-build.mustRunAfter clean
+task myTest(type: Test) {
+	testClassesDirs = sourceSets.test.output.classesDirs
+	classpath = sourceSets.test.runtimeClasspath
+}
