@@ -1,0 +1,1 @@
+web: java.runtime.version=11 java -jar ../build/libs/BancoAutenticacion-0.0.1-SNAPSHOT.jar
