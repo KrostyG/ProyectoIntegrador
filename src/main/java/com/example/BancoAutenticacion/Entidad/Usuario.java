@@ -1,9 +1,12 @@
 package com.example.BancoAutenticacion.Entidad;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import javax.persistence.*;
 
 @Entity
+@JsonIgnoreProperties(ignoreUnknown = true)
 @Table(name = "usuarios")
 public class Usuario {
     @Id
@@ -14,8 +17,19 @@ public class Usuario {
     private String numeroTelefono;
     private int edad;
     private String contrasena;
+    private boolean bloqueado = false;
 
     public Usuario() {
+    }
+
+    public Usuario(Integer id, String nombre, String email, String numeroTelefono, int edad, String contrasena, boolean bloqueado) {
+        this.id = id;
+        this.nombre = nombre;
+        this.email = email;
+        this.numeroTelefono = numeroTelefono;
+        this.edad = edad;
+        this.contrasena = contrasena;
+        this.bloqueado = bloqueado;
     }
 
     public Usuario(Integer id, String nombre, String email, String numeroTelefono, int edad, String contrasena) {
@@ -73,5 +87,13 @@ public class Usuario {
 
     public void setContrasena(String contrasena) {
         this.contrasena = contrasena;
+    }
+
+    public boolean isBloqueado() {
+        return bloqueado;
+    }
+
+    public void setBloqueado(boolean bloqueado) {
+        this.bloqueado = bloqueado;
     }
 }
